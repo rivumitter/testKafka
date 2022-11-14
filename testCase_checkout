@@ -1,5 +1,5 @@
 @Test
-  void canCheckOutUsingDueDateLimitedRollingLoanPolicy() {
+  void canCheckOutUsingAlternateCheckoutRollingLoanPolicy() {
     FixedDueDateSchedulesBuilder dueDateLimitSchedule = new FixedDueDateSchedulesBuilder()
       .withName("March Only Due Date Limit")
       .addSchedule(FixedDueDateSchedule.wholeMonth(2018, 3));
@@ -37,50 +37,40 @@
         .on(loanDate)
         .at(UUID.randomUUID()));
 
-     JsonObject loan = response.getJson();
+    JsonObject loan = response.getJson();
     String loanPolicyId = loan.getString("loanPolicyId");
-    System.out.println("loanPolicyId-->"+loanPolicyId);
 
     final IndividualResource servicePoint = servicePointsFixture.cd1();
-    final IndividualResource holdRequestJessica = requestsClient.create(new RequestBuilder()
+    // request by Jessica
+   requestsClient.create(new RequestBuilder()
       .hold()
       .forItem(smallAngryPlanet)
       .withPickupServicePointId(servicePoint.getId())
       .by(usersFixture.jessica()));
-
-    final IndividualResource holdRequest = requestsClient.create(new RequestBuilder()
+    // request by James
+    requestsClient.create(new RequestBuilder()
       .hold()
       .forItem(smallAngryPlanet)
       .withPickupServicePointId(servicePoint.getId())
       .by(usersFixture.james()));
-
+    // check in for making the item in-transit
     checkInFixture.checkInByBarcode(smallAngryPlanet);
 
     //update loan,
     final Period alternateCheckoutLoanPeriod = Period.from(2, "Weeks");
 
-    final ZonedDateTime systemTime = ZonedDateTime.of(2019, 6, 14, 11, 23, 43, 0, UTC);
-
-    //create loan policy
+    //create loan policy alternateCheckoutLoanPeriod policy
     LoanPolicyBuilder loanPolicyBuilder = new LoanPolicyBuilder()
       .rolling(Period.months(1))
       .withAlternateCheckoutLoanPeriod(alternateCheckoutLoanPeriod);
+    //update the policy
     loanPolicyClient.replace(UUID.fromString(loanPolicyId),loanPolicyBuilder);
+    // checkout by Jessica ( 1st requester )
     CheckOutResource checkOutResource = checkOutFixture.checkOutByBarcode(smallAngryPlanet, usersFixture.jessica());
 
-    System.out.println("final response->>"+checkOutResource.getJson().toString());
+    JsonObject newLoan = checkOutResource.getJson();
 
+    assertTrue(newLoan.containsKey("dueDateChangedByHold"));
+    assertEquals(newLoan.containsKey("dueDateChangedByHold"),true);
 
-    assertThat("loan date should be as supplied",
-      loan.getString("loanDate"), isEquivalentTo(loanDate));
-
-    loanHasPatronGroupProperties(loan, "Regular Group");
-
-    loanHasLoanPolicyProperties(loan, loanPolicy);
-    loanHasOverdueFinePolicyProperties(loan, overdueFinePolicy);
-    loanHasLostItemPolicyProperties(loan, lostItemFeePolicy);
-
-    assertThat("due date should be limited by schedule",
-      loan.getString("dueDate"),
-      isEquivalentTo(ZonedDateTime.of(2018, 3, 31, 23, 59, 59, 0, UTC)));
   }
