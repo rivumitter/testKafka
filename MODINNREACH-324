@@ -21,3 +21,45 @@ public static Date addYearToDate(int n) {
     Date newExpirationDate = DateHelper.addYearToDate(1);
     return newExpirationDate.toInstant().atOffset(ZoneOffset.UTC).toEpochSecond();
   }
+  
+  
+  ================== Tests ===============
+    public static User createUserWithoutExpirationDate() {
+    var user = new User();
+    user.setId(USER_ID);
+    user.setActive(true);
+    user.setPersonal(User.Personal.of(PATRON_FIRST_NAME, null, PATRON_LAST_NAME, null));
+    user.setCustomFields(Map.of(CUSTOM_FIELD_REF_ID, CUSTOM_FIELD_OPTION));
+    return user;
+  }
+  
+  
+  @Test
+  @Sql(scripts = {
+    "classpath:db/central-server/pre-populate-central-server.sql",
+    "classpath:db/patron-type-mapping/pre-populate-patron-type-mapping.sql",
+    "classpath:db/user-custom-field-mapping/pre-populate-user-custom-field-mapping.sql"
+  })
+  void return200HttpCode_and_patronInfoResponseWithPatronInfo_when_patronFoundWithNoExpirationDateAndRequestAllowed() {
+    var user = createUserWithoutExpirationDate();
+    user.setPatronGroupId(UUID.fromString("54e17c4c-e315-4d20-8879-efc694dea1ce"));
+    when(usersClient.query(anyString())).thenReturn(ResultList.of(1, List.of(user)));
+    when(automatedBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(manualBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(patronClient.getAccountDetails(any())).thenReturn(new PatronDTO());
+    when(userCustomFieldService.getMapping(any())).thenReturn(createCustomFieldMapping());
+
+    var patronInfoRequest = createPatronInfoRequest();
+
+    var responseEntity = testRestTemplate.postForEntity(
+      "/inn-reach/d2ir/circ/verifypatron", new HttpEntity<>(patronInfoRequest, headers), PatronInfoResponseDTO.class);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    var response = responseEntity.getBody();
+    System.out.println("patron info->>"+response.toString());
+    assertNotNull(response.getPatronInfo().getPatronExpireDate());
+    assertTrue(response.getRequestAllowed());
+    assertNotNull(response.getPatronInfo());
+  }
