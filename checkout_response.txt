@@ -1,0 +1,72 @@
+{
+  "id": "db9e2b8d-4e16-4387-8b26-5137e0ba7119",
+  "checkoutServicePointId": "3b9c99c7-e6e7-4ad5-a08d-1e6254ae4d24",
+  "loanDate": "2022-11-17T05:46:18.359Z",
+  "status": {
+    "name": "Open"
+  },
+  "action": "checkedout",
+  "userId": "864a2cee-4e3b-48eb-bf1e-5aa90996c9f0",
+  "itemId": "0ca6ce34-0b99-48b7-abe0-f6089e3cf7ff",
+  "itemEffectiveLocationIdAtCheckOut": "35a25d76-7e82-4e0d-9c6f-8a986d703393",
+  "dueDate": "2022-12-01T05:46:18.359Z",
+  "loanPolicyId": "2ce48724-53f7-46ff-8248-13a086ccbb9e",
+  "overdueFinePolicyId": "7fefee35-6ac6-4eff-86af-00281a345268",
+  "lostItemPolicyId": "a5cb8829-cc6a-4506-85be-4bc27251889b",
+  "metadata": {
+    "createdDate": "2022-11-17T05:46:18.892Z",
+    "createdByUserId": "79ff2a8b-d9c3-5b39-ad4a-0a84025ab085",
+    "updatedDate": "2022-11-17T05:46:18.892Z",
+    "updatedByUserId": "79ff2a8b-d9c3-5b39-ad4a-0a84025ab085"
+  },
+  "dueDateChangedByHold": true,
+  "item": {
+    "id": "0ca6ce34-0b99-48b7-abe0-f6089e3cf7ff",
+    "holdingsRecordId": "59d3c79d-168d-49c8-a28c-a6872b9cf456",
+    "instanceId": "3ca0c9cc-39a3-4c92-ba91-a2b623e37f14",
+    "title": "The Long Way to a Small, Angry Planet",
+    "barcode": "036000291452",
+    "contributors": [
+      {
+        "name": "Chambers, Becky"
+      }
+    ],
+    "callNumber": "123456",
+    "callNumberComponents": {
+      "callNumber": "123456",
+      "prefix": "PREFIX",
+      "suffix": "SUFFIX"
+    },
+    "status": {
+      "name": "Checked out"
+    },
+    "location": {
+      "name": "3rd Floor"
+    },
+    "materialType": {
+      "name": "Book"
+    }
+  },
+  "borrower": {
+    "firstName": "Jessica",
+    "lastName": "Pontefract",
+    "middleName": null,
+    "barcode": "7697595697"
+  },
+  "patronGroupAtCheckout": {
+    "id": "349a90b1-07c5-47fa-a40f-185759a6156c",
+    "name": "Regular Group"
+  },
+  "loanPolicy": {
+    "name": "Example Loan Policy"
+  },
+  "overdueFinePolicy": {
+    "name": "Faculty standard"
+  },
+  "lostItemPolicy": {
+    "name": "Undergrad standard"
+  },
+  "feesAndFines": {
+    "amountRemainingToPay": 0
+  }
+}
