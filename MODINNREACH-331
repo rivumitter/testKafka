@@ -1,0 +1,168 @@
+PAtronServiceImpl class : 233 
+
+(equalsAny(patronNameTokens[1], personal.getFirstName(), personal.getPreferredFirstName(), personal.getMiddleName()) &&
+          patronNameTokens[0].equals(personal.getLastName()))
+          
+ line 238 : 
+ 
+ (equalsAny(patronNameTokens[1], personal.getFirstName(), personal.getPreferredFirstName()) &&
+        patronNameTokens[2].equals(personal.getMiddleName()) &&
+        patronNameTokens[0].equals(personal.getLastName()))
+        
+ ================================== Test cases ======================================
+ 
+ 
+ PatronRequestFixture.java 
+ 
+   public static PatronInfoRequestDTO createPatronInfoRequestWithLastNameFirstName() {
+    var patronInfoRequest = new PatronInfoRequestDTO();
+    patronInfoRequest.setPatronName("Doe John");
+    patronInfoRequest.setVisiblePatronId("111111");
+    patronInfoRequest.setPatronAgencyCode("test1");
+    return patronInfoRequest;
+  }
+
+  public static PatronInfoRequestDTO createPatronInfoRequestWithFirstNameMiddleNameLastName() {
+    var patronInfoRequest = new PatronInfoRequestDTO();
+    patronInfoRequest.setPatronName("John Paul Doe");
+    patronInfoRequest.setVisiblePatronId("111111");
+    patronInfoRequest.setPatronAgencyCode("test1");
+    return patronInfoRequest;
+  }
+
+  public static PatronInfoRequestDTO createPatronInfoRequestWithLastNameFirstNameMiddleName() {
+    var patronInfoRequest = new PatronInfoRequestDTO();
+    patronInfoRequest.setPatronName("Doe John Paul");
+    patronInfoRequest.setVisiblePatronId("111111");
+    patronInfoRequest.setPatronAgencyCode("test1");
+    return patronInfoRequest;
+  }
+  
+  
+  =========================================================
+  
+  PatronFixture.java 
+  
+    public static User createUserWithMiddleName() {
+    var user = new User();
+    user.setId(USER_ID);
+    user.setActive(true);
+    user.setExpirationDate(OffsetDateTime.ofInstant(Instant.ofEpochMilli(expiryDateTs), ZoneOffset.UTC));
+    user.setPersonal(User.Personal.of(PATRON_FIRST_NAME, PATRON_MIDDLE_NAME, PATRON_LAST_NAME, null));
+    user.setCustomFields(Map.of(CUSTOM_FIELD_REF_ID, CUSTOM_FIELD_OPTION));
+    return user;
+  }
+  
+  ==================================================================
+  
+  PatronController Test 
+  
+  @Test
+  @Sql(scripts = {
+    "classpath:db/central-server/pre-populate-central-server.sql",
+    "classpath:db/patron-type-mapping/pre-populate-patron-type-mapping.sql",
+    "classpath:db/user-custom-field-mapping/pre-populate-user-custom-field-mapping.sql"
+  })
+  void return200HttpCode_and_patronInfoResponseWithPatronInfo_hasLastNameFirstNameOrder_when_patronFoundAndRequestAllowed() {
+    var user = createUser();
+    user.setPatronGroupId(UUID.fromString("54e17c4c-e315-4d20-8879-efc694dea1ce"));
+    when(usersClient.query(anyString())).thenReturn(ResultList.of(1, List.of(user)));
+    when(automatedBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(manualBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(patronClient.getAccountDetails(any())).thenReturn(new PatronDTO());
+    when(userCustomFieldService.getMapping(any())).thenReturn(createCustomFieldMapping());
+
+    var patronInfoRequest = createPatronInfoRequestWithLastNameFirstName();
+    System.out.println("patronReq->"+ patronInfoRequest);
+
+    var responseEntity = testRestTemplate.postForEntity(
+      "/inn-reach/d2ir/circ/verifypatron", new HttpEntity<>(patronInfoRequest, headers), PatronInfoResponseDTO.class);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    var response = responseEntity.getBody();
+    System.out.println("response->"+response.toString());
+    assertTrue(response.getRequestAllowed());
+    assertNotNull(response.getPatronInfo());
+  }
+  
+  
+  -------------------------------------------
+  
+  @Test
+  @Sql(scripts = {
+    "classpath:db/central-server/pre-populate-central-server.sql",
+    "classpath:db/patron-type-mapping/pre-populate-patron-type-mapping.sql",
+    "classpath:db/user-custom-field-mapping/pre-populate-user-custom-field-mapping.sql"
+  })
+  void return200HttpCode_and_patronInfoResponseWithPatronInfo_hasFirstNameMiddleNameLastNameOrder_when_patronFoundAndRequestAllowed() {
+    var user = createUserWithMiddleName();
+    user.setPatronGroupId(UUID.fromString("54e17c4c-e315-4d20-8879-efc694dea1ce"));
+    when(usersClient.query(anyString())).thenReturn(ResultList.of(1, List.of(user)));
+    when(automatedBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(manualBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(patronClient.getAccountDetails(any())).thenReturn(new PatronDTO());
+    when(userCustomFieldService.getMapping(any())).thenReturn(createCustomFieldMapping());
+
+    var patronInfoRequest = createPatronInfoRequestWithFirstNameMiddleNameLastName();
+    System.out.println("patronReq->"+ patronInfoRequest);
+
+    var responseEntity = testRestTemplate.postForEntity(
+      "/inn-reach/d2ir/circ/verifypatron", new HttpEntity<>(patronInfoRequest, headers), PatronInfoResponseDTO.class);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    var response = responseEntity.getBody();
+    System.out.println("response->"+response.toString());
+    assertTrue(response.getRequestAllowed());
+    assertNotNull(response.getPatronInfo());
+  }
+  
+  -------------------------------------------------
+  
+  @Test
+  @Sql(scripts = {
+    "classpath:db/central-server/pre-populate-central-server.sql",
+    "classpath:db/patron-type-mapping/pre-populate-patron-type-mapping.sql",
+    "classpath:db/user-custom-field-mapping/pre-populate-user-custom-field-mapping.sql"
+  })
+  void return200HttpCode_and_patronInfoResponseWithPatronInfo_hasLastNameFirstNameMiddleNameOrder_when_patronFoundAndRequestAllowed() {
+    var user = createUserWithMiddleName();
+    user.setPatronGroupId(UUID.fromString("54e17c4c-e315-4d20-8879-efc694dea1ce"));
+    when(usersClient.query(anyString())).thenReturn(ResultList.of(1, List.of(user)));
+    when(automatedBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(manualBlocksClient.getPatronBlocks(any())).thenReturn(ResultList.empty());
+    when(patronClient.getAccountDetails(any())).thenReturn(new PatronDTO());
+    when(userCustomFieldService.getMapping(any())).thenReturn(createCustomFieldMapping());
+
+    var patronInfoRequest = createPatronInfoRequestWithLastNameFirstNameMiddleName();
+    System.out.println("patronReq->"+ patronInfoRequest);
+
+    var responseEntity = testRestTemplate.postForEntity(
+      "/inn-reach/d2ir/circ/verifypatron", new HttpEntity<>(patronInfoRequest, headers), PatronInfoResponseDTO.class);
+
+    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    assertNotNull(responseEntity.getBody());
+
+    var response = responseEntity.getBody();
+    System.out.println("response->"+response.toString());
+    assertTrue(response.getRequestAllowed());
+    assertNotNull(response.getPatronInfo());
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
