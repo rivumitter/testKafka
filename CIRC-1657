@@ -25,5 +25,13 @@ private Request modifyHoldShelfExpirationDateBasedOnExpirationDateManagement(Zon
   
   ============================================
   
+  final Duration intervalDuration;
+
+    if(ExpirationDateManagement.MOVE_TO_BEGINNING_OF_NEXT_OPEN_SERVICE_POINT_HOURS.name().equals(expirationDateManagement.name())) {
+      intervalDuration = intervalPeriod.getIntervalDuration();
+    }
+    else
+      intervalDuration = new TimePeriod(1,"DAYS").getIntervalDuration();
+  
   
   
