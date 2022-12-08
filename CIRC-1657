@@ -1,1 +1,4 @@
-32b3038b-5110-45a1-ba2e-80b20cec5451/surrounding-openings?date=2020-08-12
+/calendar/dates/32b3038b-5110-45a1-ba2e-80b20cec5451/surrounding-openings?date=2020-08-12
+"%s/surrounding-openings?date=%s 
+
+    String path = String.format(SURROUNDING_DATES_PATH, servicePointId, requestedDate);
