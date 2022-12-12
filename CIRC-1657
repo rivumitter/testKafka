@@ -1,4 +1,17 @@
-/calendar/dates/32b3038b-5110-45a1-ba2e-80b20cec5451/surrounding-openings?date=2020-08-12
-"%s/surrounding-openings?date=%s 
+  @Test
+  public void testHoldShelf(){
+    final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
+    ZonedDateTime loanDate = ZonedDateTime.of(CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE,
+      TEST_TIME_MORNING, UTC);
+    final IndividualResource servicePoint = servicePointsFixture.cd6();
+    requestsClient.create(new RequestBuilder()
+      .page()
+      .forItem(smallAngryPlanet)
+      .withPickupServicePointId(servicePoint.getId())
+      .by(usersFixture.james()));
 
-    String path = String.format(SURROUNDING_DATES_PATH, servicePointId, requestedDate);
+    checkInFixture.checkInByBarcode(smallAngryPlanet,loanDate, servicePoint.getId());
+
+
+
+  }
