@@ -1,17 +1,18 @@
-  @Test
-  public void testHoldShelf(){
-    final IndividualResource smallAngryPlanet = itemsFixture.basedUponSmallAngryPlanet();
-    ZonedDateTime loanDate = ZonedDateTime.of(CASE_FRI_SAT_MON_DAY_ALL_PREV_DATE,
-      TEST_TIME_MORNING, UTC);
-    final IndividualResource servicePoint = servicePointsFixture.cd6();
-    requestsClient.create(new RequestBuilder()
-      .page()
-      .forItem(smallAngryPlanet)
-      .withPickupServicePointId(servicePoint.getId())
-      .by(usersFixture.james()));
+else block : line 157 ->> 
 
-    checkInFixture.checkInByBarcode(smallAngryPlanet,loanDate, servicePoint.getId());
+Request updatedRequest = Request.from(request.asJson());
+      requestQueue.update(originalRequest, updatedRequest);
 
-
-
-  }
+      return requestRepository.update(request)
+        .thenComposeAsync(result -> result.after(v -> requestQueueRepository.updateRequestsWithChangedPositions(requestQueue)));
+        
+        
+        
+        
+   ======================================
+   
+   
+   requestQueue.update(originalRequest,calculatedRequest);
+   
+    return requestRepository.update(calculatedRequest)
+        .thenComposeAsync(result -> result.after(v -> requestQueueRepository.updateRequestsWithChangedPositions(requestQueue)));
