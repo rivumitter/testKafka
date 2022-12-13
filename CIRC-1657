@@ -1,27 +1,15 @@
-else block : line 157 ->> 
+String intervalId = calculatedRequest.getPickupServicePoint().getHoldShelfExpiryPeriod().getIntervalId().toUpperCase();
 
-Request updatedRequest = Request.from(request.asJson());
-      requestQueue.update(originalRequest, updatedRequest);
+    //Old data where strategy is not set so default value but TimePeriod has MINUTES / HOURS
+    if(ExpirationDateManagement.KEEP_THE_CURRENT_DUE_DATE.name().equals(expirationDateManagement.name()) && checkShortTerm(intervalId)) {
+      expirationDateManagement = ExpirationDateManagement.KEEP_THE_CURRENT_DUE_DATE_TIME;
+    }
+    // due to usage of final val in lamda
+    ExpirationDateManagement finalExpirationDateManagement = expirationDateManagement;
+    
+    
+    
+      private boolean checkShortTerm(String intervalId) {
 
-      return requestRepository.update(request)
-        .thenComposeAsync(result -> result.after(v -> requestQueueRepository.updateRequestsWithChangedPositions(requestQueue)));
-        
-        
-        
-        
-   ======================================
-   
-   
-   requestQueue.update(originalRequest,calculatedRequest);
-   
-    return requestRepository.update(calculatedRequest)
-        .thenComposeAsync(result -> result.after(v -> requestQueueRepository.updateRequestsWithChangedPositions(requestQueue)));
-        
-        
-        ===============================
-        
-        
-            ZonedDateTime tempTime = atStartOfDay(expectedExpirationDate, tenantTimeZone)
-      .plusDays(1)
-      .minusSeconds(1)
-      .truncatedTo(ChronoUnit.SECONDS);
+    return List.of("MINUTES", "HOURS").contains(intervalId);
+  }
