@@ -16,3 +16,12 @@ Request updatedRequest = Request.from(request.asJson());
    
     return requestRepository.update(calculatedRequest)
         .thenComposeAsync(result -> result.after(v -> requestQueueRepository.updateRequestsWithChangedPositions(requestQueue)));
+        
+        
+        ===============================
+        
+        
+            ZonedDateTime tempTime = atStartOfDay(expectedExpirationDate, tenantTimeZone)
+      .plusDays(1)
+      .minusSeconds(1)
+      .truncatedTo(ChronoUnit.SECONDS);
