@@ -1,3 +1,10 @@
+String cal = "2022-12-15T00:05:00.000Z";
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(cal, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+
+
+===================
+
 String intervalId = calculatedRequest.getPickupServicePoint().getHoldShelfExpiryPeriod().getIntervalId().toUpperCase();
 
     //Old data where strategy is not set so default value but TimePeriod has MINUTES / HOURS
