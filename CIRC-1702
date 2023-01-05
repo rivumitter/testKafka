@@ -1,0 +1,11 @@
+ hasJsonPath("payload", allOf( ...  ... )))))
+ 
+ put itemBarcode above 
+ 
+ ================================
+ 
+ 
+ JsonObject payload = new JsonObject();
+ 
+ ofNullable(loanAndRelatedRecords.getLoan().getItem())
+      .ifPresent(item-> write(logEventPayload, ITEM_BARCODE.value(), item.getBarcode()));
