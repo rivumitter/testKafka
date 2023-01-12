@@ -1,0 +1,69 @@
+UserBuilder : 
+
+private final String preferredFirstName;
+
+line 88 : 
+if(this.preferredFirstName != null) {
+        personalInformation.put("preferredFirstName", this.preferredFirstName);
+}
+
+public UserBuilder withPreferredFirstName(String lastName, String firstName,String preferredFirstName) {
+    return new UserBuilder(
+      this.id,
+      firstName.substring(0, 1).concat(lastName).toLowerCase(),
+      lastName,
+      firstName,
+      this.middleName,
+      preferredFirstName,
+      this.barcode,
+      this.patronGroupId,
+      this.active,
+      this.expirationDate,
+      this.addresses);
+  }
+
+  public UserBuilder withPreferredFirstName(String lastName, String firstName,String middleName,String preferredFirstName) {
+    return new UserBuilder(
+      this.id,
+      firstName.substring(0, 1).concat(lastName).toLowerCase(),
+      lastName,
+      firstName,
+      middleName,
+      preferredFirstName,
+      this.barcode,
+      this.patronGroupId,
+      this.active,
+      this.expirationDate,
+      this.addresses);
+  }
+  
+  =====================================================
+  
+  UserExample : 
+  
+  line 8 :
+  .withPreferredFirstName("Jones", "Steven", "Jacob","Jon")
+  
+  line 15 :
+  .withPreferredFirstName("Pontefract", "Jessica","Jess")
+  
+  =====================================================================
+  TemplateContextMatcher
+  
+  line 66:
+  tokenMatchers.put(prefix + ".preferredFirstName", is(personal.getString("preferredFirstName")));
+  
+  ===================================
+  
+  CheckinByBarcodeTest 
+  
+  line 288:
+  assertThat(userContext.getString("preferredFirstName"), is(requesterUser.getPreferredFirstName()));
+  
+  
+  
+  
+
+      
+      
+      
